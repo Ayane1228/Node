@@ -15,7 +15,7 @@ server.on('request',function(req,res){
         res.end('404');
     }
 })
-    // JSON.parse()	用于将一个 JSON 字符串转换为 JavaScript 对象。
+// JSON.parse()	用于将一个 JSON 字符串转换为 JavaScript 对象。
 // 绑定端口号
 .listen(4000,function(){
     console.log('服务器启动，通过http://127.0.0.1:4000访问');
