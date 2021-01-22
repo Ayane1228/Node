@@ -20,7 +20,7 @@ node '文件名'
   module.exports.需导出的值名 = 导出后的名字	
   ```
 
-- 导入模块require
+- 导入自定义模块：require
 
   ```javascript
   const 模块名 = require('文件路径')
@@ -173,9 +173,88 @@ node '文件名'
   new Son('李四','男',18).say()
   ```
 
+  # 创建服务器
+
+  - 创建服务器
+
+```
+// 引入http模块，这是一个内置模块，可以处理http请求
+var http = require('http')
+//创建服务
+// req：客户端发送过来的消息对象
+// res：响应对象，将要相应给客户端的对象
+var server = http.createServer( (req,res) => {
+    // 设置响应头(响应的数据类型及编码)
+    res.setHeader('Content-Type','text/html;charset=utf-8')
+    //发送响应状态：res.statusCode = 200
+    res.statusCode = 200
+    //响应结束，发送消息
+    res.end('你好 Node')
+})
+//服务监听 server.listen
+server.listen(3000, () => {
+    console.log('server start');
+})
+```
+
+- 获取客户端的请求方式`req.method`，获取客户端的请求地址`req.url`
+
+  使用postman发送不同的请求方式的请求。
+
+  `req.url`只是一个字符串且去掉了前面的协议、地址值、端口号、，要获取url对象，要先引入url模块，再进行转换`url.parser(req.url)`		
+
+  ```javascript
+  // 引入http模块，内置模块，可以处理http请求
+  var http = require('http')
+  var url = require('url')
+  //创建服务
+  // req：请求对象
+  // res：响应对象，将要相应给客户端的对象
+  var server = http.createServer( (req,res) => {
+      // 设置响应头(响应的数据类型及编码)
+      res.setHeader('Content-Type','text/html;charset=utf-8')
+      //发送响应状态：res.statusCode = 200
+      res.statusCode = 200
+      // 获取客户端的请求方式`req.method`
+      console.log(req.method)
+      // 获取客户端的请求地址`req.url`
+      console.log(req.url)
+      var myUrl = url.parse(req.url)
+      console.log(myUrl)
+      //响应结束，发送消息
+      res.end('你好 Node')
+  })
+  //服务监听 server.listen
+  server.listen(3000, () => {
+      console.log('server start');
+  })
+  ```
+
+  获取的结果：
+
+  ```shell
+  PS F:\File\study\node> node .\21.请求方式和url.js
+  server start
+  POST  //请求类型
+  /?asdasd=123  //req.url：字符串
+  //url 对象
+  Url {
+    protocol: null,
+    slashes: null,
+    auth: null,
+    host: null,
+    port: null,
+    hostname: null,
+    hash: null,
+    search: '?asdasd=123',
+    query: 'asdasd=123',
+    pathname: '/',
+    path: '/?asdasd=123',
+    href: '/?asdasd=123'
+  }
+  ```
+
   
-
-
 
 # es6新增语法之 ` ${} `
 
