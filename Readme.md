@@ -174,30 +174,29 @@ node '文件名'
   }
   // 实例化对象并传递参数
   new Son('李四','男',18).say()
-```
+  ```
   
-# 创建服务器
+  # 创建服务器
   
-  - 创建服务器
-
+    - 创建服务器
 ```javascript
-// 引入http模块，这是一个内置模块，用来处理http请求
-var http = require('http')
-//创建服务
-// req：客户端发送过来的消息对象
-// res：响应对象，将要响应给客户端的对象
-var server = http.createServer( (req,res) => {
-    // 设置响应头(响应的数据类型及编码)
-    res.setHeader('Content-Type','text/html;charset=utf-8')
-    //发送响应状态
-    res.statusCode = 200
-    //响应结束，并发送消息
-    res.end('你好 Node')
-})
-//监听服务
-server.listen(3000, () => {
-    console.log('server start');
-})
+    // 引入http模块，这是一个内置模块，用来处理http请求
+    var http = require('http')
+    //创建服务
+    // req：客户端发送过来的消息对象
+    // res：响应对象，将要响应给客户端的对象
+    var server = http.createServer( (req,res) => {
+        // 设置响应头(响应的数据类型及编码)
+        res.setHeader('Content-Type','text/html;charset=utf-8')
+        //发送响应状态
+        res.statusCode = 200
+        //响应结束，并发送消息
+        res.end('你好 Node')
+    })
+    //监听服务
+    server.listen(3000, () => {
+        console.log('server start');
+    })
 ```
 
 - 获取客户端的请求方式`req.method`，获取客户端的请求地址`req.url`
@@ -256,7 +255,7 @@ server.listen(3000, () => {
     // 主机名
     hostname: null,
     //hash是以#标志符开始的一段字符串，也就是说相关的锚点。
-  hash: null,
+    hash: null,
     //search是以？开始到#（不包含#）的一段字符串。
     search: '?asdasd=123',
     //query是search 的子集，没有问号。
@@ -269,8 +268,130 @@ server.listen(3000, () => {
     href: '/?asdasd=123'
   }
   ```
-  
-  
+
+  - get请求
+
+    1. 将url转成对象，再将查询字符串`query`转换为对象:`var myUrl = url.parse(req.url,true)`
+
+       请求地址：http://127.0.0.1:3000?id=10
+
+       ```javascript
+       var http = require('http')
+       var url = require('url')
+       var server = http.createServer( (req,res) => {
+           res.setHeader('Content-Type','text/html;charset=utf-8')
+           res.statusCode = 200
+           console.log(req.url)
+           var myUrl = url.parse(req.url,true)
+           console.log(myUrl.query)
+           console.log(myUrl.query.id)
+           res.end('end')
+       })
+       //服务监听 server.listen
+       server.listen(3000, () => {
+           console.log('server start');
+       })
+       ```
+
+       结果：
+
+       ```shell
+       PS F:\File\study\node> node .\22get请求.js
+       server start
+       /?id=10
+       //console.log(req.url)
+       
+       [Object: null prototype] { id: '10' }
+       //console.log(myUrl.query)
+       
+       10	
+       //console.log(myUrl.query.id)
+       ```
+
+    2. 不使用true，使用`new URLSearchParams()`方法将`url.query`查询字符串修改对象，使用`get`参数名称也可以查看get请求参数，可以用`has`进行判断。
+
+       ```javascript
+       var http = require('http')
+       var url = require('url')
+       var server = http.createServer( (req,res) => {
+           res.setHeader('Content-Type','text/html;charset=utf-8')
+           res.statusCode = 200
+           var myUrl = url.parse(req.url)
+           // 使用URLSearchParams
+           var params = new URLSearchParams(myUrl.query)
+           console.log(params)
+           if ( params.has('id') ) 
+           {
+               console.log( params.get('id') )
+           } else 
+           {
+               console.log('NOT FOUND ID')
+           }
+           res.end('end')
+       })
+       //服务监听 server.listen
+       server.listen(3000, () => {
+           console.log('server start');
+       })
+       ```
+
+       请求地址：http://127.0.0.1:3000?id=10
+
+       ```shell
+       PS F:\File\study\node> node .\22get请求.js
+       server start
+       URLSearchParams { 'id' => '10' }
+       10
+       ```
+
+  - post请求
+
+    对请求对象绑定事件`data`,`end`。
+
+    ​	data：`req.on('data',()=>{})`,接受请求。
+
+    这表示有数据通过post请求传递到服务器端，执行回调函数，回调函数接受的是post请求的参数，可以使用toString方法将请求参数变为字符串形式。
+
+    ​	end：`req.on('end',()=>{})`，post请求全部结束，执行回调函数。
+
+    ```javascript
+    var http = require('http')
+    var url = require('url')
+    var server = http.createServer( (req,res) => {
+        res.setHeader('Content-Type','text/html;charset=utf-8')
+        res.statusCode = 200
+        var postString = ''
+        req.on('data',(postData) => {
+            console.log(postData);
+            // 转为字符串
+            postString = postData.toString()
+        })
+        req.on('end',() => {
+            // 转为对象
+            let parm = new url.URLSearchParams(postString)
+            console.log(parm.get('name'));
+            console.log(parm.get('age'));
+        })
+        res.end('end')
+    })
+    
+    //服务监听 server.listen
+    server.listen(3000, () => {
+        console.log('server start');    
+    })
+    ```
+
+    请求地址：http://127.0.0.1:3000/ ,body中写入数据
+
+    ```shell
+    PS F:\File\study\node> node .\23post请求.js
+    server start
+    <Buffer 6e 61 6d 65 3d 6a 69 6d 26 61 67 65 3d 33 36>
+    jim
+    36
+    ```
+
+    
 
 # es6新增语法之 ` ${} `
 
