@@ -269,7 +269,7 @@ node '文件名'
   }
   ```
 
-  - get请求
+  - ## get请求
 
     1. 将url转成对象，再将查询字符串`query`转换为对象:`var myUrl = url.parse(req.url,true)`
 
@@ -344,7 +344,7 @@ node '文件名'
        10
        ```
 
-  - post请求
+  - ## post请求
 
     对请求对象绑定事件`data`,`end`。
 
