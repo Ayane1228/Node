@@ -14,27 +14,31 @@ node '文件名'
 
 在别的模块中调用其他模块的值或方法：
 
-- 导出：`exports`,`module.`可以省略
+- ## 导出：
+
+  `exports`,`module.`可以省略
 
   ```javascript
   module.exports.需导出的值名 = 导出后的名字	
   ```
 
-- 导入：`require`
+- ## 导入：
 
+  `require`
+  
   ```javascript
-  const 模块名 = require('文件路径')
+const 模块名 = require('文件路径')
   ```
 
   为什么要导出、导入？
 
   Node.js 提供了 `exports` 和 `require` 两个对象，其中 `exports` 是模块公开的接口，require 用于从外部获取一个模块的接口，即所获取模块的 `exports` 对象。
-
+  
   而Node.js中有模块作用域，单个模块中定义的值和方法只能在当前模块中使用,所以要使用这2个接口进行模块间传递。
 
 # 类
 
-- 类的创建，实例化对象
+- ## 类的创建，实例化对象
 
   ```javascript
   class 类名{
@@ -51,7 +55,7 @@ node '文件名'
   let 实例化名称  = new 类名()
   //使用成员方法
   实例化对象.成员方法
-
+  
   //例
   // 定义一个类
   class Person {
@@ -66,10 +70,12 @@ node '文件名'
   person.show()
   ```
 
-  - 静态成员的构建，调用静态方法`static`
+  - ## 静态成员的构建
+
+    调用静态方法`static`
 
     静态成员，是类直接可以调用的成员，不需要实例化对象。
-
+    
     ```javascript
     class 类的名称 {
     	//定义类的静态字段，前面不要加var let const关键字
@@ -92,14 +98,14 @@ node '文件名'
             console.log('名字是' + this.name)
         }
     }
-    Person.show()
+  Person.show()
     ```
-
-    每一个类都会有一个构造方法`constructor`，如果没有手动添加构造方法，那么系统会自动提供一个无参的构造方法。
+    
+  每一个类都会有一个构造方法`constructor`，如果没有手动添加构造方法，那么系统会自动提供一个无参的构造方法。
     实例化对象就相当于调用这个构造方法。通过构造方法可以定义实例化字段（实例化对象的字段），可以在实例化的时候进行赋值。
 
     构造方法在javascript中不可以重载，只能有一个构造方法。
-
+    
     ```javascript
     class Person {
     	//构造方法，可以是无参或有参的
@@ -119,7 +125,7 @@ node '文件名'
     new Person('张三','女').say()
     ```
 
-- 类的继承：extends
+- ## 类的继承：extends
 
     当子类的方法和父类的方法名相同时，子类的方法会覆盖父类的方法。
     用super关键字可以调用父类的方法。
@@ -391,7 +397,156 @@ node '文件名'
     36
     ```
 
-    
+
+# 路由
+
+路由就是通过客户端访问的URL的不同，从而解析URL并提供不同的服务。
+
+## 静态路由、页面加载
+
+```javascript
+...
+let Url = url.parse(req.url)
+let pathName = Url.pathname
+if (pathName == '/' || pathName == '/index.html')
+{
+	console.log('首页')
+} else 
+{
+	console.log(404)
+}
+...
+```
+
+fs模块：文件模块
+
+```javascript
+fs.readFile ('相对路径',(err,data) => {
+    res.setHeader('Content-Type','text/html;charset=utf-8')
+    res.statusCode = 200
+	//设置网页文件的读取的编码格式，状态码
+    //err 错误信息
+	if (err) {
+		return console.log (err)
+	}
+	//data 获取到的信息
+	res.end(data)
+})
+```
+
+当html文件要访问一些静态资源比如css，js，图片的时候也会发送一次请求需要设置请求头。
+
+https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types:
+
+可以查询常用MIME类型，设置`Content-Type`。
+
+```javascript
+if（pathname == '/style.css'）{
+	fs.writeHead(200,{'Content-Type':'text/css'})
+	fs.readFile('./style.css', (err,data)=>{
+	if (err) {
+		return console.log (err)
+	}
+		res.end(data)
+	})
+} else if (pathname == '/public.js') {
+	fs.writeHead(200,{'Content-Type':'text/javascript'})
+	fs.readFile('./public.js', (err,data)=>{
+	if (err) {
+		return console.log (err)
+	}
+		res.end(data)
+	})    
+}
+```
+
+## 动态路由
+
+当有许多文件需要加载时，不可能每一个都设置Content-Type，这里就可以使用动态路由。
+
+```javascript
+...
+let Url = url.parse(req.url)
+let pathName = Url.pathname
+// 引入path模块
+const path = require ('path')
+...
+// 获取资源的后缀名
+let extname = path.extname(pathname)
+// 定义默认Content-Type
+let mine = 'text/html;charset = utf-8'
+// 判断
+if (extname == '.png') {
+	mime = 'image/png'
+}
+...
+```
+
+# NPM
+
+1. 世界上最大的JavaScript软件注册表
+
+2. 网站依赖项目的统一管理工具
+
+3. 通过package.json管理依赖项目
+
+   ## 常见指令
+
+   查看版本
+
+   ```shell
+   npm --version		
+   ```
+
+   自定义包，会新建一个package.json文件。
+
+   ```shell
+   npm init		
+   ```
+
+   安装第三方模块
+
+   ```shell
+   npm i bootstrap --save
+   ```
+
+   `--save`：将保存配置信息到pacjage.json。默认为dependencies节点中。
+
+   `-g`:保存到全局
+
+   更新模块
+
+   ```shell
+   npm update 模块名
+   ```
+
+   卸载
+
+   ```shell
+   npm uninstall 模块名
+   ```
+
+   清除缓存
+
+   ```shell
+   npm cache clear
+   ```
+
+   ## 自定义启动指令
+
+   修改`package.json`中的`“scripts”`中的`“start”`
+
+   ```json
+   "scripts":{
+   	"start":"node index.js"
+   }
+   ```
+
+   修改之后`npm start`就相当于`node index.js`命令。
+
+   ## 迁移后重新安装依赖
+
+   进入`package.json`使用`npm i --save`
 
 # es6新增语法之 ` ${} `
 
