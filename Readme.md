@@ -28,13 +28,11 @@ Node.js 提供了 `exports` 和 `require` 两个对象，其中 `exports` 是模
 
 - ## 导入：
 
-  导入：
-  
   ```javascript
-const 模块名 = require('文件路径')
+  const 模块名 = require('文件路径')
   ```
 
-# 类
+  # 类
 
 - ## 类的创建，实例化对象
 
