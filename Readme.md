@@ -66,45 +66,42 @@ Node.js 提供了 `exports` 和 `require` 两个对象，其中 `exports` 是模
   person.show()
   ```
 
-  - ## 静态成员的构建
+  - ## 静态成员的构建`static`
 
-    调用静态方法`static`
 
-    静态成员，是类直接可以调用的成员，不需要实例化对象。
-    
-    ```javascript
-    class 类的名称 {
-    	//定义类的静态字段，前面不要加var let const关键字
-    	static 属性名 = '值'
-    	//定义类的静态方法，不需要加function关键字
-    	static 方法名(){
-            //使用类名调用类的静态字段
-    		console.log(类的名称.属性名)
-    	}
-    }
-    //不需要实例化
-    类名.静态成员方法
-    
-    //例
-    // 定义一个类
-    class Person {
-        // 定义实例化对象的字段
-        static name = '人类'
-        static show() {
-            console.log('名字是' + this.name)
-        }
-    }
+  静态成员，是类直接可以调用的成员，不需要实例化对象。
+
+  ```javascript
+  class 类的名称 {
+  	//定义类的静态字段，前面不要加var let const关键字
+  	static 属性名 = '值'
+  	//定义类的静态方法，不需要加function关键字
+  	static 方法名(){
+          //使用类名调用类的静态字段
+  		console.log(类的名称.属性名)
+  	}
+  }
+  //不需要实例化
+  类名.静态成员方法
+  
+  //例
+  // 定义一个类
+  class Person {
+      // 定义实例化对象的字段
+      static name = '人类'
+      static show() {
+          console.log('名字是' + this.name)
+      }
+  }
   //调用
-    Person.show()
-    ```
-    
-    
+  Person.show()
+  ```
 
   ​	每一个类都会有一个构造方法`constructor`，如果没有手动添加构造方法，那么系统会自动提供一个无参的构造方法。
 
   ​	实例化对象就相当于调用这个构造方法。通过构造方法可以定义实例化字段（实例化对象的字段），可以在实例化的时候进行赋值。
 
-   	构造方法在javascript中不可以重载，只能有一个构造方法。
+  构造方法在javascript中不可以重载，只能有一个构造方法。
 
     ```javascript
     class Person {
@@ -712,7 +709,7 @@ connection.query(sql, (err,result) => {
 })
 ```
 
-结果，result会是一个对象。
+结果result会是一个对象。
 
 ```shell
 PS F:\File\study\node\25mysqlDemo> node .\index.js
