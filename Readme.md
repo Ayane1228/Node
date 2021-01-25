@@ -98,8 +98,8 @@ const 模块名 = require('文件路径')
     }
   //调用
     Person.show()
-    
     ```
+    
     
 
   ​	每一个类都会有一个构造方法`constructor`，如果没有手动添加构造方法，那么系统会自动提供一个无参的构造方法。
@@ -549,6 +549,186 @@ if (extname == '.png') {
    ## 迁移后重新安装依赖
 
    进入`package.json`使用`npm i --save`
+
+# EJS嵌入式模板
+
+## 安装
+
+```shell
+npm i EJS --save 
+```
+
+## 使用
+
+新建一个`index.js`，创建服务
+
+创建views目录，新建`index.ejs`文件。
+
+语法：`<%=msg%>`,引入EJS模块，渲染模板`ejs.renderFile('相对路径',{赋值（采取键值对）,(err,data) => {回调函数}})`
+
+```javascript
+const http = require('http')
+const ejs = require('ejs')
+const server = http.createServer( (req,res) => {
+    res.setHeader('Content-Type','text/html;charset=utf-8')
+    ejs.renderFile('./views/index.ejs',{msg:'hello ejs'},(err,str) => {
+        if (err) {
+            return console.log(err);
+        } else 
+        {
+            res.end(str)
+        }
+    })
+})
+.listen(3000, () => {
+    console.log('server start');
+})
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>测试ejs模板</h1>
+    <h2><%=msg%></h2>
+</body>
+</html>
+```
+
+## 模板语法
+
+- 脚本标签
+
+  ```
+  <%Javascript脚本%>
+  ```
+
+  将list的内容循环输出list,可以将所有的<%%>去掉看成为JavaScript语言。将list数据写到`index.js`中去。
+
+  ```ejs
+  <ul>
+      <% list.forEach(item=>{%>
+      <li><%=item%></li>
+      <% })%>
+  </ul>
+  ```
+
+  ```javascript
+      ejs.renderFile('./views/index.ejs',{msg:'hello ejs',list:['你好','好卡','操']},(err,str) => {
+          if (err) {
+              return console.log(err);
+          } else 
+          {
+              res.end(str)
+          }
+      })
+  ```
+
+- 导入标签
+
+  导入其他ejs模板`<%- inclue('模板名') -%>`
+
+  <!DOCTYPE html>
+  
+  ```ejs
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  </head>
+  <body>
+    <%- include('header') -%>
+      <p>文章主题</p>
+  </body>
+  </html>
+  ```
+  
+  ```javascript
+  if (req.url == '/main') {
+  	ejs.renderFile('./views/main.ejs',(err,str) => {
+      	if (err) {
+          	return console.log(err);
+              } else {
+                  res.end(str)
+  		}
+  	}) 
+  }
+  ```
+
+# 数据库
+
+## 安装
+
+```shell
+npm i mysql --save	
+```
+
+## 使用
+
+新建index.js,引入mysql模块，创建数据库连接对象并配置，连接数据库，关闭数据库连接。
+
+```javascript
+// 引入mysql模块
+const mysql = require('mysql')
+// 创建数据库连接对象并配置
+const connection = mysql.createConnection({
+    // 地址
+    host:'127.0.0.1',
+    // 用户名
+    user:'root',
+    // 密码
+    password:'stw551669',
+    // 数据库
+    database:'blog'
+})
+// 连接数据库
+connection.connect()
+console.log('数据库连接成功')
+// 关闭数据库连接
+connection.end()
+console.log('数据库断开成功')
+```
+
+## 查询
+
+```javascript
+// 创建SQL语句，必须放在连接数据库之后
+let sql = 'SELECT id,username,password FROM user'
+
+// 执行sql语句
+connection.query(sql, (err,result) => {
+    if (err) 
+    {
+        return console.log(err);
+    }
+    console.log(result);
+    result.forEach(item => {
+        console.log(item.id,item.username,item.password);
+    })
+})
+```
+
+结果，result会是一个对象。
+
+```shell
+PS F:\File\study\node\25mysqlDemo> node .\index.js
+数据库连接成功
+数据库断开成功
+[
+  RowDataPacket { id: 1, username: 'admin', password: '123456' },
+  RowDataPacket { id: 2, username: 'asd', password: '456' }
+]
+1 admin 123456
+2 asd 456
+```
+
+
 
 # es6新增语法之 ` ${} `
 
