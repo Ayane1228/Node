@@ -581,18 +581,10 @@ const server = http.createServer( (req,res) => {
 ```
 
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
 <body>
     <h1>测试ejs模板</h1>
     <h2><%=msg%></h2>
 </body>
-</html>
 ```
 
 ## 模板语法
@@ -626,25 +618,14 @@ const server = http.createServer( (req,res) => {
 
 - 导入标签
 
-  导入其他ejs模板
+  用来导入其他ejs模板 
 
-  ```ejs
-  <!DOCTYPE html>
-  <html lang="en">
-<head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-  </head>
-  <body>
+  ```
     <%- include('header') -%>
       <p>文章主题</p>
-  </body>
-  </html>
   ```
-  
-  ```javascript
-  if (req.url == '/main') {
+```javascript
+if (req.url == '/main') {
   	ejs.renderFile('./views/main.ejs',(err,str) => {
       	if (err) {
           	return console.log(err);
@@ -653,7 +634,7 @@ const server = http.createServer( (req,res) => {
   		}
   	}) 
   }
-  ```
+```
 
 # 数据库
 
@@ -689,7 +670,7 @@ connection.end()
 console.log('数据库断开成功')
 ```
 
-## 查询
+## 增删改查
 
 ```javascript
 // 创建SQL语句，必须放在连接数据库之后
