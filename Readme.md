@@ -672,38 +672,116 @@ console.log('数据库断开成功')
 
 ## 增删改查
 
-```javascript
-// 创建SQL语句，必须放在连接数据库之后
-let sql = 'SELECT id,username,password FROM user'
+- 查询
 
-// 执行sql语句
-connection.query(sql, (err,result) => {
-    if (err) 
-    {
-        return console.log(err);
-    }
-    console.log(result);
-    result.forEach(item => {
-        console.log(item.id,item.username,item.password);
-    })
-})
-```
+  ```javascript
+  // 查询语句，创建SQL语句，必须放在连接数据库之后
+  //// 查询语句:'SELECT 查询值 FROM 表名'
+  let sql = 'SELECT id,username,password FROM user'
+  
+  // 执行sql语句
+  connection.query(sql, (err,result) => {
+      if (err) 
+      {
+          return console.log(err);
+      }
+      //结果result会是一个对象
+      console.log(result);
+      result.forEach(item => {
+          console.log(item.id,item.username,item.password);
+      })
+  })
+  ```
 
-结果result会是一个对象。
+- 增加
 
-```shell
-PS F:\File\study\node\25mysqlDemo> node .\index.js
-数据库连接成功
-数据库断开成功
-[
-  RowDataPacket { id: 1, username: 'admin', password: '123456' },
-  RowDataPacket { id: 2, username: 'asd', password: '456' }
-]
-1 admin 123456
-2 asd 456
-```
+  ```javascript
+  // 插入语句,'INSERT INTO 表名 插入值 占位符:(?,?)'; 执行的时候赋值
+  let insertsql = 'INSERT INTO user (username,password) VALUES (?,?)'
+  
+  // 插入语句:connection.query(执行语句名,插入值,回调函数)
+  connection.query(insertsql,['张三','974561356'],(err,result) => {
+      // 语句执行错误
+      if (err) 
+      {
+          console.log(err);
+      }
+      // 如果结果的属性(affectedRows:影响的行数)!=0，则插入成功，反之则失败
+      if (result.affectedRows != 0) 
+      {
+          // 这张表的ID是自动生成的，因此不能手动插入，注意是insertId 不是insertID/insertid等
+          console.log('插入成功,插入的ID是' + result.insertId);
+      } else 
+      {
+          console.log('插入失败');
+      }
+  })
+  ```
 
+- 删除
 
+  ```javascript
+  // 删除语句
+  let deleatesql = 'DELETE FROM user WHERE id = ?'
+  // 删除语句:'DELETE FROM 表名 WHERE 主键 = ? 占位符'
+  connection.query(deleatesql,8,(err,result) => {
+      // 语句执行错误
+      if (err) 
+      {
+          console.log(err);
+      }
+      // 如果结果的属性(affectedRows:影响的行数)!=0，则删除成功，反之则失败
+      if (result.affectedRows != 0) 
+      {
+          // 删除没有insertId属性
+          console.log('删除成功');
+      } else 
+      {
+          console.log('删除失败');
+      }
+  })
+  ```
+
+- 更新
+
+  ```javascript
+  // 更新语句：'UPDATE 表名 SET 要修改的值 = ? WHERE 主键 = ?'
+  let updatesql = 'UPDATE user SET password = ? WHERE id = ?'
+  // 更新语句
+  connection.query(updatesql,['000',2], (err,result) => {
+      if (err) 
+      {
+          console.log(err);
+      }
+      // 如果结果的属性(affectedRows:影响的行数)!=0，则更新成功，反之则失败
+      if (result.affectedRows != 0) 
+      {
+          console.log('更新成功');
+      } else 
+      {
+          console.log('更新失败');
+      }
+  })
+  ```
+
+  ```shell
+  PS F:\File\study\node\25mysqlDemo> node .\index.js
+  数据库连接成功
+  数据库断开成功
+  [
+    RowDataPacket { id: 1, username: 'admin', password: '123456' },
+    RowDataPacket { id: 2, username: 'asd', password: '000' },
+    RowDataPacket { id: 3, username: 'fsd', password: '789' }
+  ]
+  1 admin 123456
+  2 asd 000
+  3 fsd 789
+  插入成功,插入的ID是9
+  删除成功
+  更新成功
+  ```
+
+  
 
 # es6新增语法之 ` ${} `
 
@@ -720,14 +798,13 @@ step2： 将字符串变量用${}包起来，再写到需要拼接的地方
 
 3、示例代码：
 
-```
+```javascript
 let a='Karry Wang';
-
 let str=`I love ${a}, because he is handsome.`;
 //注意：这行代码是用返单号引起来的
-
 alert(str);
 ```
 
-一定是用反单引号啊！不要写成单引号了！！
+# MySql删除数据之后ID自增不连续问题
 
+找到的办法都不行，不过有人说表可能和别的表有联系的话随便修改主键可能会出现问题，所以先不修改了。
