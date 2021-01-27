@@ -103,24 +103,24 @@ Node.js 提供了 `exports` 和 `require` 两个对象，其中 `exports` 是模
 
   构造方法在javascript中不可以重载，只能有一个构造方法。
 
-    ```javascript
-    class Person {
-    	//构造方法，可以是无参或有参的
-    	constructor (name,sex) {
-    		//定义实例化字段
-    		// 需要实例化对象的时候进行传值
-    		this.name = name
-    		this.sex = sex
-    		// 所有实例化对象的age都 =  18 
-    		this.age = 18
-    	}
-    	say () {
-            console.log(`大家好我是${this.name},性别${this.sex},今年${this.age}`)
-        }
+```javascript
+class Person {
+	//构造方法，可以是无参或有参的
+	constructor (name,sex) {
+		//定义实例化字段
+		// 需要实例化对象的时候进行传值
+		this.name = name
+		this.sex = sex
+		// 所有实例化对象的age都 =  18 
+		this.age = 18
+	}
+	say () {
+        console.log(`大家好我是${this.name},性别${this.sex},今年${this.age}`)
     }
-    //实例化对象并通过实例化对象传值
-    new Person('张三','女').say()
-    ```
+}
+//实例化对象并通过实例化对象传值
+new Person('张三','女').say()
+```
 
 - ## 类的继承：extends
 
@@ -781,9 +781,228 @@ console.log('数据库断开成功')
   更新成功
   ```
 
+# Express
+
+Express是Node.js的一个框架，对Node.js进行了封装，简化了操作。
+
+## 安装
+
+```shell
+npm i express --save
+```
+
+## 使用
+
+新建一个入口文件index.js。
+
+```javascript
+// 引入express模块
+const express = require('express')
+// 创建服务
+const app = express()
+
+// 路由
+app.get('/', (req,res) => {
+    res.send('Hello Express')
+})
+
+// 监听
+app.listen(3000,() => {
+    console.log('server start');
+})
+```
+
+## 路由
+
+对同一个地址发送不同类型的请求，会进行不同的响应.
+
+```javascript
+// 引入express模块
+const express = require('express')
+// 创建服务
+const app = express()
+
+// 路由
+// 处理get请求
+app.get('/', (req,res) => {
+    res.send('Hello get')
+})
+// 处理post请求
+app.post('/', (req,res) => {
+    res.send('Hello post')
+})
+// 所有的请求类型都会响应
+app.all('/all', (req,res) => {
+    res.send('Hello')
+})
+
+// 监听
+app.listen(3000,() => {
+    console.log('server start');
+})
+```
+
+### 路由路径匹配
+
+分为2种，字符串模式和正则表达式模式
+
+- 字符串匹配模式
+
+  ```javascript
+  // 固定字符串模式匹配
+  app.get('/index',(req,res) => {
+      res.send('首页');
+  })
+  // 通配模式 * => 表示任意个字符
+  app.get('/*',(req,res) => {
+      res.send('*模式');
+  })
+  // ?模式 => 前一个字符或组可以出现0~1次，这里指b可以出现0或1次
+  app.get('/ab?c',(req,res) => {
+      res.send('？模式');
+  })
+  // +模式 => 前一个字符或组至少出现一次，这里指b至少出现一次
+  app.get('/ab+c',(req,res) => {
+      res.send('+模式');
+  })
+  // 组：()
+  // 例子，表示bc至少出现一次
+  app.get('/a(bc)+',(req,res) => {
+      res.send('组');
+  })
+  ```
+
+- 正则表达式匹配：将路由直接修改为正则表达式 （不要加‘’）
+
+  ```javascript
+  // 例子：匹配以html结尾的url,
+  // 正则表达式必须包含在//之间, . 在正则中表示任意字符，所以这里第一个.表示任意字符出现任意次，第二个.加上了转义字符表示单纯的一个.
+  //正则表达式:/.*\.html$/
+  app.get(/.*\.html$/,(req,res) => {
+      res.send('正则匹配');
+  })
+  ```
+
+  ## 路由处理程序  
+
+  将路由处理程序提取单独处理
+
+  - 单路由处理程序
+
+  ```javascript
+  let hander = (req,res) => {
+      res.send('<h1>单路由处理程序</h1>')
+  }
+  app.get('/dan',hander)
+  ```
+
+  - 多路由处理程序，加上next（），表示继续执行
+
+  ```javascript
+  let hander1 = (req,res,next) => {
+      console.log('开始')
+      next()
+  }
+  let hander2 = (req,res) => {
+      res.send('<h1>多路由处理程序</h1>')
+  }
+  app.get('/duo',[hander1,hander2])
+  ```
+
+  ## 响应数据
+
+  向客户端响应不同类型的数据
+
+  ```javascript
+  res.send(...)
+  // 基本上这种方式响应的是字符串类型的数据
+  ```
+
+  - 响应文件
+
+  
+使用`res.sendFile('绝对路径',回调函数)`，我们可以使用`_dirname`这个这个常量表示当前入口文件所在的路径。
+  
+  ```javascript
+  let hander = (req,res) => {
+      console.log(__dirname);
+      //F:\File\study\node\26
+      res.sendFile(`${__dirname}/html/index.html`)
+  }
+  app.get('/index',hander)
+```
+  
+- 响应JSON数据
   
 
-# es6新增语法之 ` ${} `
+  2种方式，直接响应JSON数据或是响应JSON文件
+  
+  ```javascript
+  // 直接响应JSON数据，res.json()：将对象转换为JSON数据
+  let hander1 = (req,res) => {
+      res.json({
+          name:'张三'
+      })
+  }
+  app.get('/zhijieJSON',hander1)
+  // 响应JSON文件
+  let hander2 = (req,res) => {
+      res.sendFile(`${__dirname}/html/date.json`)
+  }
+app.get('/json',hander2)
+  ```
+
+  - 响应静态资源
+
+    当响应的文件选哟访问静态资源，比如CSS，图片时。
+  
+    ```
+  <script src="/js/index.js"></script>
+    ```
+  
+    使用中间件：应用程序.use（express.static.(路径)）
+  
+    ```javascript
+    app.use(express.static.('statice'))
+    ```
+  
+    最终访问静态资源就会去访问static/js/index.js文件.
+  
+  ## 重定向
+  
+  结束相应，不发送任何数据
+  
+  ```javascript
+  res.end()
+  ```
+  
+  ## 获取请求参数
+  
+  - get请求
+  
+    `req.query`获取query:查询字符串(?拼接)参数
+  
+    请求地址：htttp://127.0.0.1:3000/user?id=10
+  
+    `req.params`获取params(:拼接)传递参数 
+  
+    请求地址:htttp://127.0.0.1:3000/user/10
+  
+    ```javascript
+    // get请求
+    app.get('/user',(req,res) => {
+        console.log(req.query.id);
+        res.end()
+    })
+    app.get('/user/:id',(req,res) => {
+        console.log(req.params.id);
+        res.end()
+    })
+    ```
+  
+    撒大大是三大诉讼法撒撒发顺丰的撒大三大四
+
+#  es6新增语法之 ` ${} `
 
 这是es6中新增的字符串方法
 
@@ -801,7 +1020,7 @@ step2： 将字符串变量用${}包起来，再写到需要拼接的地方
 ```javascript
 let a='Karry Wang';
 let str=`I love ${a}, because he is handsome.`;
-//注意：这行代码是用返单号引起来的
+//注意：这行代码是用返单引号引起来的
 alert(str);
 ```
 
