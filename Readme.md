@@ -920,9 +920,8 @@ app.listen(3000,() => {
 
   - 响应文件
 
-  
-使用`res.sendFile('绝对路径',回调函数)`，我们可以使用`_dirname`这个这个常量表示当前入口文件所在的路径。
-  
+  使用`res.sendFile('绝对路径',回调函数)`，我们可以使用`_dirname`这个这个常量表示当前入口文件所在的路径。
+
   ```javascript
   let hander = (req,res) => {
       console.log(__dirname);
@@ -930,13 +929,13 @@ app.listen(3000,() => {
       res.sendFile(`${__dirname}/html/index.html`)
   }
   app.get('/index',hander)
-```
-  
+  ```
+
 - 响应JSON数据
-  
+
 
   2种方式，直接响应JSON数据或是响应JSON文件
-  
+
   ```javascript
   // 直接响应JSON数据，res.json()：将对象转换为JSON数据
   let hander1 = (req,res) => {
@@ -949,45 +948,52 @@ app.listen(3000,() => {
   let hander2 = (req,res) => {
       res.sendFile(`${__dirname}/html/date.json`)
   }
-app.get('/json',hander2)
+  app.get('/json',hander2)
   ```
 
   - 响应静态资源
 
     当响应的文件选哟访问静态资源，比如CSS，图片时。
-  
+
     ```
-  <script src="/js/index.js"></script>
+    <script src="/js/index.js"></script>
     ```
-  
-    使用中间件：应用程序.use（express.static.(路径)）
-  
+    
+      使用中间件：应用程序.use（express.static.(路径)）
+    
     ```javascript
     app.use(express.static.('statice'))
     ```
-  
-    最终访问静态资源就会去访问static/js/index.js文件.
-  
+    
+    最终访问静态资源会去访问static/js/index.js文件.
   ## 重定向
-  
-  结束相应，不发送任何数据
-  
+
+  url跳转时跳转去重定向的页面。
+
+  ```javascript
+  res.redirect()
+  ```
+
+  ## 结束相应
+
+  不发送任何数据
+
   ```javascript
   res.end()
   ```
-  
+
   ## 获取请求参数
-  
+
   - get请求
-  
+
     `req.query`获取query:查询字符串(?拼接)参数
-  
+
     请求地址：htttp://127.0.0.1:3000/user?id=10
-  
+
     `req.params`获取params(:拼接)传递参数 
-  
+
     请求地址:htttp://127.0.0.1:3000/user/10
-  
+
     ```javascript
     // get请求
     app.get('/user',(req,res) => {
@@ -995,12 +1001,31 @@ app.get('/json',hander2)
         res.end()
     })
     app.get('/user/:id',(req,res) => {
-        console.log(req.params.id);
+        console.log(req.params.id)
         res.end()
     })
     ```
-  
-    撒大大是三大诉讼法撒撒发顺丰的撒大三大四
+
+
+  - post请求
+
+    ```javascript
+    app.use(express.urlencoded({extended:true}))
+    app.post('/login', (req,res) => {
+        console.log(req.body);
+        console.log(req.body.username);
+        console.log(req.body.password);
+        res.end()
+    })
+    ```
+
+    `express.urlencoded`中间件:是用来处理 Content-Type 为 x-www-form-urlencoded 的数据
+
+    `extended`:返回的对象是一个键值对，
+
+    当extended为false的时候，键值对中的值就为`String`或`Array`形式；
+
+    为true的时候，则可为任何数据类型。
 
 #  es6新增语法之 ` ${} `
 
